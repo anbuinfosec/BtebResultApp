@@ -55,6 +55,10 @@ jobs:
             echo "has_keystore=false" >> "$GITHUB_OUTPUT"
           fi
 
+          # Ensure debug.keystore is available on CI runner
+          if [ ! -f "$GITHUB_WORKSPACE/debug.keystore" ]; then
+            keytool -genkey -v -keystore "$GITHUB_WORKSPACE/debug.keystore" -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass "android" -keypass "android" -dname "CN=Android Debug, O=Android, C=US"
+          fi
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest --no-daemon
 
@@ -139,4 +143,4 @@ jobs:
             app/build/outputs/bundle/release/*.aab
             SHA256SUMS.txt
         env:
-          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN || secrets.GITHUB_TOKEN }}
