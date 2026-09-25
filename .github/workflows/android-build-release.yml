@@ -66,34 +66,6 @@ jobs:
         run: |
           ./gradlew assembleDebug assembleRelease bundleRelease --no-daemon
 
-      # Sign release APK using r0adkll/sign-android-release if secret is provided
-      - name: Sign Release APK
-        if: steps.prepare_keystore.outputs.has_keystore == 'true'
-        uses: r0adkll/sign-android-release@v1
-        id: sign_app
-        with:
-          releaseDirectory: app/build/outputs/apk/release
-          signingKey: ${{ secrets.SIGNING_KEY || secrets.KEYSTORE_BASE64 }}
-          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD || secrets.STORE_PASSWORD }}
-          alias: ${{ secrets.KEY_ALIAS || secrets.ALIAS || 'upload' }}
-          keyPassword: ${{ secrets.KEY_PASSWORD }}
-        env:
-          BUILD_TOOLS_VERSION: "34.0.0"
-
-      # Sign release AAB using r0adkll/sign-android-release if secret is provided
-      - name: Sign Release AAB
-        if: steps.prepare_keystore.outputs.has_keystore == 'true'
-        uses: r0adkll/sign-android-release@v1
-        id: sign_bundle
-        with:
-          releaseDirectory: app/build/outputs/bundle/release
-          signingKey: ${{ secrets.SIGNING_KEY || secrets.KEYSTORE_BASE64 }}
-          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD || secrets.STORE_PASSWORD }}
-          alias: ${{ secrets.KEY_ALIAS || secrets.ALIAS || 'upload' }}
-          keyPassword: ${{ secrets.KEY_PASSWORD }}
-        env:
-          BUILD_TOOLS_VERSION: "34.0.0"
-
       # Security: Immediately destroy the keystore file from runner storage
       - name: Secure Cleanup Keystore
         if: always()

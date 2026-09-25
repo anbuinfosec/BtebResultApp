@@ -185,16 +185,66 @@ class BtebViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    companion object {
+        val DEFAULT_BTEB_DEPARTMENTS = listOf(
+            "Civil Technology",
+            "Computer Science & Technology",
+            "Electrical Technology",
+            "Mechanical Technology",
+            "Electronics Technology",
+            "Automobile Technology",
+            "Architecture Technology",
+            "Power Technology",
+            "Refrigeration & Air Conditioning (RAC)",
+            "Chemical Technology",
+            "Food Technology",
+            "Textile Technology",
+            "Electromedical Technology",
+            "Environmental Technology",
+            "Telecommunication Technology",
+            "Mechatronics Technology",
+            "Marine Technology",
+            "Graphic Design",
+            "Printing Technology",
+            "Garments Design & Pattern Making",
+            "Instrumentation & Process Control",
+            "Mining & Mine Survey",
+            "Surveying",
+            "Ceramics Technology",
+            "Glass Technology",
+            "Diploma in Agriculture",
+            "Diploma in Fisheries",
+            "Diploma in Forestry",
+            "Diploma in Livestock"
+        )
+        val DEFAULT_SEMESTERS = listOf("1", "2", "3", "4", "5", "6", "7", "8")
+    }
+
     fun loadRoutineDepartments() {
         viewModelScope.launch {
             _routineDepartmentsState.value = UiState.Loading
             try {
                 val resp = repository.getRoutineDepartments()
-                val depts = resp.departments ?: emptyList()
-                val sems = resp.semesters?.map { it.toString() } ?: emptyList()
+                val apiDepts = resp.departments?.filter { it.isNotBlank() } ?: emptyList()
+                val depts = if (apiDepts.isNotEmpty()) {
+                    apiDepts
+                } else {
+                    val booklistDepts = booklistRepository.booklists2022
+                        .map { it.cleanName }
+                        .filter { it.isNotBlank() }
+                        .distinct()
+                    if (booklistDepts.isNotEmpty()) booklistDepts else DEFAULT_BTEB_DEPARTMENTS
+                }
+                val apiSems = resp.semesters?.map { it.toString() }?.filter { it.isNotBlank() } ?: emptyList()
+                val sems = if (apiSems.isNotEmpty()) apiSems else DEFAULT_SEMESTERS
                 _routineDepartmentsState.value = UiState.Success(Pair(depts, sems))
             } catch (e: Exception) {
-                _routineDepartmentsState.value = UiState.Error(e.localizedMessage ?: "Failed to load departments.")
+                val booklistDepts = booklistRepository.booklists2022
+                    .map { it.cleanName }
+                    .filter { it.isNotBlank() }
+                    .distinct()
+                val depts = if (booklistDepts.isNotEmpty()) booklistDepts else DEFAULT_BTEB_DEPARTMENTS
+                _routineDepartmentsState.value = UiState.Success(Pair(depts, DEFAULT_SEMESTERS))
             }
         }
     }
