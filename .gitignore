@@ -1,0 +1,37 @@
+# Built application files
+*.apk
+*.aar
+*.aab
+
+# Keystores and signing credentials
+*.jks
+*.keystore
+my-upload-key.jks
+debug.keystore
+
+# Local configuration and environment secrets
+.env
+local.properties
+
+# Gradle and Kotlin caches
+.gradle/
+build/
+app/build/
+.kotlin/
+
+# Android Studio / IntelliJ IDEA
+*.iml
+.idea/
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+
+# macOS and OS metadata
+.DS_Store
+Thumbs.db
+/captures/
+.externalNativeBuild/
+.cxx/
