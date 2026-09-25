@@ -10,7 +10,6 @@ my-upload-key.jks
 debug.keystore
 
 # Local configuration and environment secrets
-.env
 local.properties
 
 # Gradle and Kotlin caches
